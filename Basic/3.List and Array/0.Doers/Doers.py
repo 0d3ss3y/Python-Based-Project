@@ -1,7 +1,6 @@
 import os
-import random
+from time import sleep
 from typing import Union, Any
-
 
 def clear_terminal() -> Union[Any, None]:
     return os.system('cls' if os.name == 'nt' else 'clear')
@@ -13,7 +12,7 @@ def display_opt():
         print("__Option__:")
 
         for idx, opt in enumerate(options, start=1):
-            print(f"{idx}. {opt}")
+            print(f"[{idx}].{opt}")
 
         action: int = int(input("Enter Number: "))
 
@@ -28,7 +27,7 @@ def display_opt():
 
 
 def add_item(tasks) -> list:
-    def set_priority(task) -> str:
+    def set_priority() -> str:
         levels = ["emergency_pos","high", "medium", "low"]
 
         for idx,level in enumerate(levels,start=1):
@@ -43,19 +42,21 @@ def add_item(tasks) -> list:
 
 
     def inserting_task(tasks,task,importance) -> list:
-        def override(lst,act,pos) -> list:
+        found = False
+        def override(lst,act,pos) -> Union[list,None]:
             check = input("Would you like to Override this task? [y/n]: ").lower()
             if check[0] not in ["y","n"] or check[0] == 'y':
                 lst.insert(pos,act)
             return lst
 
-        position = 0
+        pos = 0
 
         if importance == "emergency_pos":
             if tasks[0] != " ":
                 print("Emergency Slot Taken")
-                position = 0
+                pos = 0
         else:
+
             if importance == "high":
                 position = [i for i in range(1, 4)]
             elif importance == "medium":
@@ -63,10 +64,14 @@ def add_item(tasks) -> list:
             else:
                 position = [i for i in range(7, 11)]
 
+            for i in position:
+                if i == " ":
+                    found = True
+                    pos = position.index(i)
+                    break
 
-
-
-        tasks = override(tasks, task, position)
+        if found:
+            tasks = override(tasks, task, pos)
         return tasks
 
     try:
@@ -74,9 +79,8 @@ def add_item(tasks) -> list:
             raise IndexError
 
         task = input("Enter Task: ")
-        priority = set_priority(task)
+        priority = set_priority()
         tasks = inserting_task(tasks,task,priority)
-
         return tasks
     except IndexError:
         print("Tasks full - Complete a few tasks")
@@ -93,7 +97,6 @@ def show_item(tasks):
 
 def main():
     tasks = [" " for _ in range(10)]
-    print(tasks)
     clear_terminal()
     print("__Task Manager__")
 
@@ -103,8 +106,14 @@ def main():
 
             if option == "Add":
                 tasks = add_item(tasks)
+                print("__Task Successfully Added")
+                sleep(0.5)
+                clear_terminal()
             elif option == "Remove":
                 tasks = remove_item(tasks)
+                print("__Task Successfully Removed")
+                sleep(0.5)
+                clear_terminal()
             elif option == "Show":
                 show_item(tasks)
             else:
