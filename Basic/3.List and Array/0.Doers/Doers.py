@@ -92,7 +92,28 @@ def remove_item(tasks) -> list:
 
 
 def show_item(tasks):
-    pass
+    lst = {
+        "emergency": [],
+        "high": [],
+        "medium": [],
+        "low":[]
+    }
+
+    for i in range(len(tasks)):
+        if i == 0:
+            lst["emergency"].append(tasks[i])
+        elif i in range(1,4):
+            lst["high"].append(tasks[i])
+        elif i in range(4,7):
+            lst["medium"].append(tasks[i])
+        else:
+            lst["low"].append(tasks[i])
+
+    for key,values in lst.items():
+        print(f"{key.capitalize()}:")
+        for num,value in enumerate(values,start=1):
+            print(f"\t[{num}].{value}")
+        print()
 
 
 def main():
@@ -115,6 +136,7 @@ def main():
                 sleep(0.5)
                 clear_terminal()
             elif option == "Show":
+                clear_terminal()
                 show_item(tasks)
             else:
                 raise SystemExit
