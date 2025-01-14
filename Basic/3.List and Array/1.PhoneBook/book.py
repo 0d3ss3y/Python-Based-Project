@@ -1,7 +1,54 @@
+import os
 import random
+from time import sleep
+
+
+def clear_terminal():
+    return os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def search(contact):
-    pass
+    def search_by_name(name, details):
+        names = list(details.keys())
+        if name in names:
+            print(f"contact name: {name}\ncontact surname: {details[name]['surname']}\ncontact number: {details[name]['contact_no']}")
+        else:
+            print(f"Error 404 - Contact {name} not found")
+
+    def search_by_surname(surname, details):
+        for key,values in details.items():
+            if values['surname'] == surname:
+                print(f"contact name: {key}\ncontact surname: {values['surname']}\ncontact number: {values['contact_no']}")
+        else:
+            print(f"Error 404 - Contact {surname} not found")
+
+    def search_by_number(number,details):
+        for key, values in details.items():
+            if values['contact_no'] == number:
+                print(
+                    f"contact name: {key}\ncontact surname: {values['surname']}\ncontact number: {values['contact_no']}")
+        else:
+            print(f"Error 404 - Contact {number} not found")
+
+
+    categories = ["name", "surname", "number"]
+    print("__Search Methods__")
+    for category in categories:
+        print(f"[{category[0].upper()}]{category[1::]}")
+
+    search_by = input("\nSearch using: ").lower()
+
+    if search_by not in categories:
+        print(f"Illegal search: {search_by}")
+    else:
+        attempt = input(f"Enter target's {search_by}: ").lower().capitalize()
+
+        if search_by == "name":
+            search_by_name(attempt,contact)
+        elif search_by == "surname":
+            search_by_surname(attempt,contact)
+        else:
+            search_by_number(attempt, contact)
 
 
 def sort_contact(contact):
@@ -30,6 +77,8 @@ def adding_contact(contact):
                 "contact_no": contact_no
             }
 
+        return contact
+
 
     except (ValueError,EOFError) as error:
         print(f"Error 404 - Not Found: {error}")
@@ -53,7 +102,7 @@ def display_opt(contact):
         print("\n__Options__:")
 
         for key, option in enumerate(options, start=1):
-            print(f"[{key}]. {option}]")
+            print(f"[{key}]. {option}")
 
         opt = int(input("\nEnter your option [1-6]: "))
 
@@ -74,7 +123,9 @@ def main():
         opt = display_opt(contact)
 
         if opt == "Add":
-            adding_contact(contact)
+            contact = adding_contact(contact)
+            print(contact)
+            print("Contact added")
         elif opt == "Search":
             search(contact)
         elif opt == "Sort":
@@ -86,7 +137,9 @@ def main():
         else:
             display_contact(contact)
 
+        sleep(0.2)
+        clear_terminal()
 
-
+ 
 if __name__ == '__main__':
     main()
