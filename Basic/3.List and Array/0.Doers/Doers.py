@@ -33,7 +33,7 @@ def set_priority() -> str:
 
     while True:
         try:
-            choice = input("Enter Priority [Number/Description]: ").lower()
+            choice = input("\nEnter Priority [Number/Description]: ").lower()
             if choice.isdigit() and 1 <= int(choice) <= len(levels):
                 return levels[int(choice) - 1]
             elif choice in levels:
@@ -75,7 +75,7 @@ def remove_item(tasks: List[Optional[str]]) -> List[Optional[str]]:
         print(f"[{idx}]. {cat}")
 
     try:
-        priority_idx = int(input("Enter Priority Index: "))
+        priority_idx = int(input("\nEnter Priority Index: "))
         if 1 <= priority_idx <= len(categories):
             category = categories[priority_idx - 1].lower()
             positions = {
@@ -125,7 +125,7 @@ def show_item(tasks: List[Optional[str]]) -> None:
 def main():
     tasks = [" " for _ in range(10)]
     clear_terminal()
-    print("__Task Manager__")
+    print("__Task Manager__\n")
 
     while True:
         option = display_opt()
