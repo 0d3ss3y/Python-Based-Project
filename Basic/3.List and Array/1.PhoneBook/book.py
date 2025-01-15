@@ -52,7 +52,14 @@ def search(contact):
 
 
 def sort_contact(contact):
-    pass
+    placeholder = contact.copy()
+    contact.clear()
+    placeholder_keys = sorted(list(placeholder.keys()))
+
+    for key in placeholder_keys:
+        value = placeholder[key]
+        contact[key] = value
+    return contact
 
 
 def adding_contact(contact):
@@ -117,19 +124,28 @@ def display_opt(contact):
 
 def main():
     print("__Contact Book__")
-    contact = {}
+    contact = {
+        "Dummy":{
+            "surname":"Data",
+            "contact_no":"12345",
+        },
+        "Asta":{
+            "surname":"Data",
+            "contact_no":"12345",
+        }
+    }
 
     while True:
         opt = display_opt(contact)
 
         if opt == "Add":
             contact = adding_contact(contact)
-            print(contact)
-            print("Contact added")
+            print("Contact Added")
         elif opt == "Search":
             search(contact)
         elif opt == "Sort":
             sort_contact(contact)
+            print("Successfully Sorted")
         elif opt == "Edit":
             contact_edit(contact)
         elif opt == "Delete":
