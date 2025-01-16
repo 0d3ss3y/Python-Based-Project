@@ -1,3 +1,5 @@
+from typing import Union, Any
+
 report_card = {
     "Alice Johnson": {
         "Math": 85,
@@ -63,6 +65,24 @@ report_card = {
         "Letter": "A"
     },
 }
+
+
+def option() -> Union[str,Any]:
+    try:
+        options = ["Store Grades", "Calculate Average", "Determine Letter"]
+
+        for key, opt in enumerate(options):
+            print(f"[{key}]. {opt}")
+
+        selection = int(input(f"Enter your selection [1-{len(options)}]: "))
+
+        if 1 <= selection <= len(options):
+            return options[selection - 1]
+        else:
+            raise ValueError(f"Illegal Section {selection}")
+    except ValueError as error:
+        print(f"Error 404 - Not Found: {error}")
+        return None
 
 
 def display_grades():
