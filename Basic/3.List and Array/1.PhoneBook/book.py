@@ -1,6 +1,7 @@
 import os
 import random
 from time import sleep
+from typing import Union, Any
 
 
 def clear_terminal():
@@ -8,27 +9,31 @@ def clear_terminal():
 
 
 def search(contact):
-    def search_by_name(name, details):
+    def search_by_name(name, details)-> Union[None,Any]:
         names = list(details.keys())
         if name in names:
-            print(f"contact name: {name}\ncontact surname: {details[name]['surname']}\ncontact number: {details[name]['contact_no']}")
+            print(f"\nContact name: {name}\nContact surname: {details[name]['surname']}\nContact number: {details[name]['contact_no']}")
+            return f"{name},{details[name]['surname']},{details[name]['contact_no']}"
         else:
             print(f"Error 404 - Contact {name} not found")
 
-    def search_by_surname(surname, details):
+    def search_by_surname(surname, details) -> Union[None,Any]:
         for key,values in details.items():
             if values['surname'] == surname:
-                print(f"contact name: {key}\ncontact surname: {values['surname']}\ncontact number: {values['contact_no']}")
+                print(f"\nContact name: {key}\nContact surname: {values['surname']}\nContact number: {values['contact_no']}")
+                return f"{key},{values['surname']},{values['contact_no']}"
         else:
             print(f"Error 404 - Contact {surname} not found")
+            return None
 
-    def search_by_number(number,details):
+    def search_by_number(number,details) -> Union[None,Any]:
         for key, values in details.items():
             if values['contact_no'] == number:
-                print(
-                    f"contact name: {key}\ncontact surname: {values['surname']}\ncontact number: {values['contact_no']}")
+                print(f"\nContact name: {key}\nContact surname: {values['surname']}\nContact number: {values['contact_no']}")
+                return f"{key},{values['surname']},{values['contact_no']}"
         else:
             print(f"Error 404 - Contact {number} not found")
+            return None
 
 
     categories = ["name", "surname", "number"]
@@ -44,11 +49,13 @@ def search(contact):
         attempt = input(f"Enter target's {search_by}: ").lower().capitalize()
 
         if search_by == "name":
-            search_by_name(attempt,contact)
+            result = search_by_name(attempt,contact)
         elif search_by == "surname":
-            search_by_surname(attempt,contact)
+            result = search_by_surname(attempt,contact)
         else:
-            search_by_number(attempt, contact)
+            result = search_by_number(attempt, contact)
+
+        return result
 
 
 def sort_contact(contact):
@@ -92,7 +99,71 @@ def adding_contact(contact):
 
 
 def contact_edit(contact):
-    pass
+    def edit_name(user_name, details):
+        headers = list(details.keys())
+        info = details[user_name]
+        del details[user_name]
+
+        new_contact_name = input("Enter new details user_name: ").capitalize()
+        if new_contact_name in headers:
+            print(f"{new_contact_name} already exists adding random number")
+            num = random.randint(0,9)
+            new_contact_name = f"{new_contact_name}_{num}"
+
+        details[new_contact_name] = info
+        return details
+
+
+    def edit_surname(user_name,user_surname,details):
+        new_surname = input("Enter new surname: ").capitalize()
+
+        if new_surname == " ":
+            new_surname = user_surname
+
+        details[user_name]["surname"] = new_surname
+
+        return details
+
+
+    def edit_number(username,user_no,details):
+        new_contact_no = input("Enter new contact number: ")
+
+        if new_contact_no == " ":
+            new_contact_no = user_no
+
+        details[username]["contact_no"] = new_contact_no
+
+        return details
+
+
+    try:
+        topics = ["Name","Surname","Number"]
+        parts = search(contact)
+        if parts is None:
+            raise EOFError("Contact not found")
+
+        name, surname, contact_no = parts.split(",")
+
+        for idx,topic in enumerate(topics,start=1):
+            print(f"[{idx}].{topic}")
+
+        selection = int(input("\nEnter your selection [1-3]: "))
+
+        if selection not in range(1,3):
+            raise EOFError("Invalid Selection")
+        elif selection == 1:
+            contact = edit_name(name, contact)
+        elif selection == 2:
+            contact = edit_surname(surname, contact)
+        else:
+            contact = edit_number(name, contact_no, contact)
+
+        return contact
+
+
+    except (ValueError,EOFError) as error:
+        print(f"Error 404 - Not Found: {error}")
+        return contact
 
 
 def delete_contact(contact):
@@ -142,12 +213,12 @@ def main():
             contact = adding_contact(contact)
             print("Contact Added")
         elif opt == "Search":
-            search(contact)
+            _ = search(contact)
         elif opt == "Sort":
-            sort_contact(contact)
+            contact = sort_contact(contact)
             print("Successfully Sorted")
         elif opt == "Edit":
-            contact_edit(contact)
+            contact = contact_edit(contact)
         elif opt == "Delete":
             delete_contact(contact)
         else:
