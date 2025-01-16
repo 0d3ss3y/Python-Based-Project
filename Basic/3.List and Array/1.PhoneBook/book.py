@@ -1,249 +1,130 @@
 import os
-import random
+import json
 from time import sleep
-from typing import Union, Any
 
 
 def clear_terminal():
-    return os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
 
-def search(contact):
-    def search_by_name(name, details)-> Union[None,Any]:
-        names = list(details.keys())
-        if name in names:
-            print(f"\nContact name: {name}\nContact surname: {details[name]['surname']}\nContact number: {details[name]['contact_no']}")
-            return f"{name},{details[name]['surname']},{details[name]['contact_no']}"
+def display_menu(options):
+    print("\n__Options__")
+    for idx, option in enumerate(options, start=1):
+        print(f"[{idx}] {option}")
+    try:
+        choice = int(input("Enter your choice: "))
+        if 1 <= choice <= len(options):
+            return options[choice - 1]
         else:
-            print(f"Error 404 - Contact {name} not found")
-
-    def search_by_surname(surname, details) -> Union[None,Any]:
-        for key,values in details.items():
-            if values['surname'] == surname:
-                print(f"\nContact name: {key}\nContact surname: {values['surname']}\nContact number: {values['contact_no']}")
-                return f"{key},{values['surname']},{values['contact_no']}"
-        else:
-            print(f"Error 404 - Contact {surname} not found")
-            return None
-
-    def search_by_number(number,details) -> Union[None,Any]:
-        for key, values in details.items():
-            if values['contact_no'] == number:
-                print(f"\nContact name: {key}\nContact surname: {values['surname']}\nContact number: {values['contact_no']}")
-                return f"{key},{values['surname']},{values['contact_no']}"
-        else:
-            print(f"Error 404 - Contact {number} not found")
-            return None
+            raise ValueError
+    except ValueError:
+        print("Invalid choice. Please try again.")
+        return None
 
 
-    categories = ["name", "surname", "number"]
-    print("__Search Methods__")
-    for category in categories:
-        print(f"[{category[0].upper()}]{category[1::]}")
+def add_contact(contacts):
+    name = input("Enter contact name: ").strip().capitalize()
+    surname = input("Enter contact surname: ").strip().capitalize()
+    contact_no = input("Enter contact number: ").strip()
 
-    search_by = input("\nSearch using: ").lower()
+    if not name or not surname or not contact_no:
+        print("All fields are required!")
+        return
 
-    if search_by not in categories:
-        print(f"Illegal search: {search_by}")
+    if name in contacts:
+        print(f"Contact with name {name} already exists!")
+        return
+
+    contacts[name] = {"surname": surname, "contact_no": contact_no}
+    print(f"Contact {name} added successfully!")
+
+
+def search_contact(contacts):
+    query = input("Enter name, surname, or number to search: ").strip().capitalize()
+    results = [
+        (name, details)
+        for name, details in contacts.items()
+        if query in name or query in details["surname"] or query in details["contact_no"]
+    ]
+
+    if results:
+        for name, details in results:
+            print(f"{name}: {details['surname']}, {details['contact_no']}")
     else:
-        attempt = input(f"Enter target's {search_by}: ").lower().capitalize()
-
-        if search_by == "name":
-            result = search_by_name(attempt,contact)
-        elif search_by == "surname":
-            result = search_by_surname(attempt,contact)
-        else:
-            result = search_by_number(attempt, contact)
-
-        return result
+        print("No matching contacts found.")
 
 
-def sort_contact(contact):
-    placeholder = contact.copy()
-    contact.clear()
-    placeholder_keys = sorted(list(placeholder.keys()))
-
-    for key in placeholder_keys:
-        value = placeholder[key]
-        contact[key] = value
-    return contact
+def delete_contact(contacts):
+    name = input("Enter the name of the contact to delete: ").strip().capitalize()
+    if name in contacts:
+        del contacts[name]
+        print(f"Contact {name} deleted successfully!")
+    else:
+        print("Contact not found.")
 
 
-def adding_contact(contact):
-    try:
-        first_name = input("Enter contact name: ").capitalize()
-        surname = input("Enter contact surname: ").capitalize()
-        contact_no = input("Enter contact number: ")
+def edit_contact(contacts):
+    name = input("Enter the name of the contact to edit: ").strip().capitalize()
+    if name not in contacts:
+        print("Contact not found.")
+        return
 
-        if first_name == '' or surname == '' or contact_no == '':
-            raise EOFError("Empty Arguments")
+    print(f"Editing contact {name}: {contacts[name]}")
+    new_name = input("Enter new name (or press Enter to keep current): ").strip().capitalize() or name
+    surname = input("Enter new surname: ").strip().capitalize() or contacts[name]["surname"]
+    contact_no = input("Enter new contact number: ").strip() or contacts[name]["contact_no"]
 
-        elif first_name in list(contact.keys()):
-            tag = random.randint(1,9)
-            contact[f"{first_name}_{tag}"] = {
-                "surname": surname,
-                "contact_no": contact_no
-            }
-
-        else:
-            contact[first_name] = {
-                "surname": surname,
-                "contact_no": contact_no
-            }
-
-        return contact
+    if new_name != name:
+        contacts.pop(name)
+    contacts[new_name] = {"surname": surname, "contact_no": contact_no}
+    print(f"Contact {new_name} updated successfully!")
 
 
-    except (ValueError,EOFError) as error:
-        print(f"Error 404 - Not Found: {error}")
+def display_contacts(contacts):
+    if not contacts:
+        print("No contacts to display.")
+        return
+
+    print("\n__Contact List__")
+    for name, details in sorted(contacts.items()):
+        print(f"{name}: {details['surname']}, {details['contact_no']}")
 
 
-def contact_edit(contact):
-    def edit_name(user_name, details):
-        headers = list(details.keys())
-        info = details[user_name]
-        del details[user_name]
-
-        new_contact_name = input("Enter new details user_name: ").capitalize()
-        if new_contact_name in headers:
-            print(f"{new_contact_name} already exists adding random number")
-            num = random.randint(0,9)
-            new_contact_name = f"{new_contact_name}_{num}"
-
-        details[new_contact_name] = info
-        return details
+def load_contacts(file_path="contacts.json"):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            return json.load(file)
+    return {}
 
 
-    def edit_surname(user_name,user_surname,details):
-        new_surname = input("Enter new surname: ").capitalize()
-
-        if new_surname == " ":
-            new_surname = user_surname
-
-        details[user_name]["surname"] = new_surname
-
-        return details
-
-
-    def edit_number(username,user_no,details):
-        new_contact_no = input("Enter new contact number: ")
-
-        if new_contact_no == " ":
-            new_contact_no = user_no
-
-        details[username]["contact_no"] = new_contact_no
-
-        return details
-
-
-    try:
-        topics = ["Name","Surname","Number"]
-        parts = search(contact)
-        if parts is None:
-            raise EOFError("Contact not found")
-
-        name, surname, contact_no = parts.split(",")
-
-        for idx,topic in enumerate(topics,start=1):
-            print(f"[{idx}].{topic}")
-
-        selection = int(input("\nEnter your selection [1-3]: "))
-
-        if selection not in range(1,3):
-            raise EOFError("Invalid Selection")
-        elif selection == 1:
-            contact = edit_name(name, contact)
-        elif selection == 2:
-            contact = edit_surname(surname, contact)
-        else:
-            contact = edit_number(name, contact_no, contact)
-
-        return contact
-
-
-    except (ValueError,EOFError) as error:
-        print(f"Error 404 - Not Found: {error}")
-        return contact
-
-
-def delete_contact(contact):
-    try:
-        name = input("Enter contact name: ").capitalize()
-
-        if name in list(contact.keys()):
-            del contact[name]
-        else:
-            raise EOFError("Contact not found")
-
-        return contact
-
-    except (ValueError,EOFError) as error:
-        print(f"Error 404 - Not Found: {error}")
-
-
-def display_contact(contact):
-    print("\n__Contact Details__\n")
-    for key,values in (contact.items()):
-        print(f"{key.upper()}:")
-        for name,info in values.items():
-            print(f"\t{name.capitalize()}: {info}")
-        print()
-
-
-def display_opt():
-    try:
-        options = ["Add", "Search", "Sort", "Edit", "Delete", "Display"]
-        print("\n__Options__:")
-
-        for key, option in enumerate(options, start=1):
-            print(f"[{key}]. {option}")
-
-        opt = int(input("\nEnter your option [1-6]: "))
-
-        if 1 > opt > 6:
-            raise ValueError("Illegal input")
-        else:
-            return options[opt-1]
-
-    except ValueError as error:
-        print(f"Error 404 - Not Found: {error}")
+def save_contacts(contacts, file_path="contacts.json"):
+    with open(file_path, "w") as file:
+        json.dump(contacts, file, indent=4)
 
 
 def main():
-    print("__Contact Book__")
-    contact = {
-        "Dummy":{
-            "surname":"Data",
-            "contact_no":"12345",
-        },
-        "Asta":{
-            "surname":"Data",
-            "contact_no":"12345",
-        }
-    }
+    contacts = load_contacts()
+    options = ["Add Contact", "Search Contact", "Edit Contact", "Delete Contact", "Display Contacts", "Exit"]
 
     while True:
-        opt = display_opt()
-
-        if opt == "Add":
-            contact = adding_contact(contact)
-            print("Contact Added")
-        elif opt == "Search":
-            _ = search(contact)
-        elif opt == "Sort":
-            contact = sort_contact(contact)
-            print("Successfully Sorted")
-        elif opt == "Edit":
-            contact = contact_edit(contact)
-        elif opt == "Delete":
-            delete_contact(contact)
-            print("Successfully Deleted")
-        else:
-            display_contact(contact)
-
-        sleep(0.2)
         clear_terminal()
+        choice = display_menu(options)
+        if choice == "Add Contact":
+            add_contact(contacts)
+        elif choice == "Search Contact":
+            search_contact(contacts)
+        elif choice == "Edit Contact":
+            edit_contact(contacts)
+        elif choice == "Delete Contact":
+            delete_contact(contacts)
+        elif choice == "Display Contacts":
+            display_contacts(contacts)
+        elif choice == "Exit":
+            save_contacts(contacts)
+            print("Goodbye!")
+            break
+        sleep(1)
 
- 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
