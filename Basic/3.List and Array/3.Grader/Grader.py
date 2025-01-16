@@ -1,3 +1,6 @@
+import os
+import sys
+from time import sleep
 from typing import Union, Any
 
 report_card = {
@@ -67,9 +70,13 @@ report_card = {
 }
 
 
+def clear_terminal():
+    return os.system('cls' if os.name == 'nt' else 'clear')
+
+
 def option() -> Union[str,Any]:
     try:
-        options = ["Store Grades", "Calculate Average", "Determine Letter"]
+        options = ["Store Grades", "Calculate Average", "Determine Letter","Display Grades","Quit"]
 
         for key, opt in enumerate(options):
             print(f"[{key}]. {opt}")
@@ -93,7 +100,34 @@ def display_grades():
 
 
 def main():
-    pass
+    try:
+        print("__Grade System__\n")
+
+        while True:
+            selection = option()
+
+            if selection == "Store Grades":
+                pass
+            elif selection == "Calculate Average":
+                pass
+            elif selection == "Determine Letter":
+                pass
+            elif selection == "Display Grades":
+                display_grades()
+            elif selection == "Quit":
+                raise SystemExit(0)
+            else:
+                raise ValueError(f"Illegal Section")
+
+            sleep(0.5)
+            clear_terminal()
+
+    except(SystemExit, KeyboardInterrupt):
+        print("Bye Bye...!")
+        sys.exit(0)
+
+    except ValueError as error:
+        print(f"Error 404 - Not Found: {error}")
 
 
 if __name__ == '__main__':
