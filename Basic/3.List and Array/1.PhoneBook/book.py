@@ -182,10 +182,15 @@ def delete_contact(contact):
 
 
 def display_contact(contact):
-    pass
+    print("\n__Contact Details__\n")
+    for key,values in (contact.items()):
+        print(f"{key.upper()}:")
+        for name,info in values.items():
+            print(f"\t{name.capitalize()}: {info}")
+        print()
 
 
-def display_opt(contact):
+def display_opt():
     try:
         options = ["Add", "Search", "Sort", "Edit", "Delete", "Display"]
         print("\n__Options__:")
@@ -218,7 +223,7 @@ def main():
     }
 
     while True:
-        opt = display_opt(contact)
+        opt = display_opt()
 
         if opt == "Add":
             contact = adding_contact(contact)
@@ -232,6 +237,7 @@ def main():
             contact = contact_edit(contact)
         elif opt == "Delete":
             delete_contact(contact)
+            print("Successfully Deleted")
         else:
             display_contact(contact)
 
