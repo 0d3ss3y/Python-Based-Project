@@ -167,7 +167,18 @@ def contact_edit(contact):
 
 
 def delete_contact(contact):
-    pass
+    try:
+        name = input("Enter contact name: ").capitalize()
+
+        if name in list(contact.keys()):
+            del contact[name]
+        else:
+            raise EOFError("Contact not found")
+
+        return contact
+
+    except (ValueError,EOFError) as error:
+        print(f"Error 404 - Not Found: {error}")
 
 
 def display_contact(contact):
