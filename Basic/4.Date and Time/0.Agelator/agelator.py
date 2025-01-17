@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 def find_next_birthday_day(month, day):
     this_year = datetime.date.today().year
     birthday = datetime.date((this_year+1), month, day)
-    print(birthday.strftime("%B")
+    print(birthday.strftime("%B"))
 
 
 def determine_age(year):
@@ -16,7 +16,7 @@ def determine_age(year):
     print(f"You are {age} years old")
 
 
-def determine_zodiac(birthday):
+def determine_zodiac(month, day):
     chart = {
         "Aries" : {
             "start" : "3/21",
@@ -67,7 +67,21 @@ def determine_zodiac(birthday):
             "end": "3/20"
         }
     }
+    this_year = datetime.date.today().year
+    selected_date = datetime.datetime(this_year,month,day)
 
+    for symbol, dates in chart.items():
+        starting = dates["start"]
+        ending = dates["end"]
+
+        start_month,start_day = starting.split("/")
+        ending_month,ending_day = ending.split("/")
+
+        starting_date = datetime.date(this_year,int(start_month),int(start_day))
+        ending_date = datetime.date(this_year,int(ending_month),int(ending_day))
+
+        if starting_date <= selected_date <= ending_date:
+            return symbol
 
 
 
@@ -130,8 +144,9 @@ def main():
     # except ValueError as error:
     #     print(f"Error 404 - Not Found: {error}")
 
-    determine_age(2002)
-    find_next_birthday_day(6,20)
+    # determine_age(2002)
+    # find_next_birthday_day(6,20)
+    determine_zodiac(6,20)
 
 if __name__ == '__main__':
     main()
