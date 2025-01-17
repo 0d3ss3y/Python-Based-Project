@@ -1,9 +1,13 @@
 import datetime
 from typing import Union
 
+from dateutil.relativedelta import relativedelta
 
-def find_next_birthday_day(birthday):
-    pass
+
+def find_next_birthday_day(month, day):
+    this_year = datetime.date.today().year
+    birthday = datetime.date((this_year+1), month, day)
+    print(birthday.strftime("%B")
 
 
 def determine_age(year):
@@ -117,14 +121,17 @@ def retrieve_birthday():
 
 
 def main():
-    try:
-        print("__Agelator__\n")
+    # try:
+    #     print("__Agelator__\n")
+    #
+    #     while True:
+    #         birth_year,birth_month,birth_day = retrieve_birthday()
+    #
+    # except ValueError as error:
+    #     print(f"Error 404 - Not Found: {error}")
 
-        while True:
-            birth_year,birth_month,birth_day = retrieve_birthday()
-
-    except ValueError as error:
-        print(f"Error 404 - Not Found: {error}")
+    determine_age(2002)
+    find_next_birthday_day(6,20)
 
 if __name__ == '__main__':
     main()
