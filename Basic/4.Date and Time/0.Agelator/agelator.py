@@ -6,8 +6,10 @@ def find_next_birthday_day(birthday):
     pass
 
 
-def determine_age(birthday):
-    pass
+def determine_age(year):
+    this_year = datetime.date.today().year
+    age = this_year - year
+    print(f"You are {age} years old")
 
 
 def determine_zodiac(birthday):
@@ -67,7 +69,7 @@ def determine_zodiac(birthday):
 
 def option() -> Union[str,None]:
     try:
-        options = ["Determine Age", "Determine Zodiac", "Determine Next Birthday"]
+        options = ["Determine Age", "Determine Zodiac", "Determine Next Birthday","Quit"]
         print("\n__Options__")
         for key, opt in enumerate(options, start=1):
             print(f"[{key}] {opt}")
@@ -115,7 +117,14 @@ def retrieve_birthday():
 
 
 def main():
-    pass
+    try:
+        print("__Agelator__\n")
+
+        while True:
+            birth_year,birth_month,birth_day = retrieve_birthday()
+
+    except ValueError as error:
+        print(f"Error 404 - Not Found: {error}")
 
 if __name__ == '__main__':
     main()
