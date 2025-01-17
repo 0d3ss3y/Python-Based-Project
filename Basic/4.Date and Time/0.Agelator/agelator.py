@@ -1,7 +1,11 @@
 import datetime
+import os
+import sys
+from time import sleep
 from typing import Union
 
-from dateutil.relativedelta import relativedelta
+def clear_terminal():
+    return os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def find_next_birthday_day(month, day):
@@ -84,7 +88,6 @@ def determine_zodiac(month, day):
             print(f"You are a {symbol} charka hun")
 
 
-
 def option() -> Union[str,None]:
     try:
         options = ["Determine Age", "Determine Zodiac", "Determine Next Birthday","Quit"]
@@ -135,18 +138,32 @@ def retrieve_birthday():
 
 
 def main():
-    # try:
-    #     print("__Agelator__\n")
-    #
-    #     while True:
-    #         birth_year,birth_month,birth_day = retrieve_birthday()
-    #
-    # except ValueError as error:
-    #     print(f"Error 404 - Not Found: {error}")
+    try:
+        print("__Agelator__\n")
 
-    # determine_age(2002)
-    # find_next_birthday_day(6,20)
-    determine_zodiac(6,20)
+        while True:
+            clear_terminal()
+            opt = option()
+            birth_year,birth_month,birth_day = retrieve_birthday()
+
+            if opt == "Determine Age":
+                determine_age(int(birth_year))
+            elif opt == "Determine Zodiac":
+                determine_zodiac(int(birth_month),int(birth_day))
+            elif opt == "Determine Next Birthday":
+                find_next_birthday_day(int(birth_month),int(birth_day))
+            elif opt == "Quit":
+                raise SystemExit(0)
+            sleep(0.4)
+
+
+    except ValueError as error:
+        print(f"Error 404 - Not Found: {error}")
+
+    except (KeyboardInterrupt, SystemExit):
+        print("\n__Good Bye!__")
+        sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
