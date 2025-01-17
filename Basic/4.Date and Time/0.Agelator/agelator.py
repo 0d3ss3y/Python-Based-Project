@@ -77,11 +77,11 @@ def determine_zodiac(month, day):
         start_month,start_day = starting.split("/")
         ending_month,ending_day = ending.split("/")
 
-        starting_date = datetime.date(this_year,int(start_month),int(start_day))
-        ending_date = datetime.date(this_year,int(ending_month),int(ending_day))
+        starting_date = datetime.datetime(this_year,int(start_month),int(start_day))
+        ending_date = datetime.datetime(this_year,int(ending_month),int(ending_day))
 
         if starting_date <= selected_date <= ending_date:
-            return symbol
+            print(f"You are a {symbol} charka hun")
 
 
 
