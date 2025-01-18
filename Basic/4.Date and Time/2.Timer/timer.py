@@ -4,6 +4,7 @@ from typing import Union
 
 def custom_timer() -> Union[None,time]:
     try:
+        print("\n__Custom Timer__")
         hours = int(input('Enter Hours: '))
         mins = int(input('Enter Minutes: '))
         secs = int(input('Enter Seconds: '))
@@ -19,7 +20,11 @@ def custom_timer() -> Union[None,time]:
         return None
 
 
-def display_timer():
+def display_timer(current_time):
+    pass
+
+
+def option():
     pass
 
 
@@ -42,17 +47,29 @@ def retrieve_start_time():
 
 
 def main():
-    print("__Timer__\n")
-    end_time = time(0,0,0)
-    opt = retrieve_start_time()
+    try:
+        print("__Timer__\n")
+        end_time = time(0,0,0)
+        opt = retrieve_start_time()
 
-    if opt == "Custom":
-        start_time = custom_timer()
-    else:
-        hour, minute, second = opt.split(":")
-        start_time = time(int(hour), int(minute), int(second))
+        if opt == "Custom":
+            start_time = custom_timer()
+        else:
+            hour, minute, second = opt.split(":")
+            start_time = time(int(hour), int(minute), int(second))
 
-    if
+        if start_time is None:
+            raise ValueError(f"Start time can't be None")
+        else:
+            print(f"Starting Timer at {start_time}")
+
+            while start_time < end_time:
+
+
+
+    except ValueError as error:
+        print(f"{error}")
+
 
 
 if __name__ == '__main__':
