@@ -2,13 +2,37 @@ import os
 import sys
 from typing import Union
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def clear_terminal():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def load_notes():
-    pass
+    try:
+        load_dir = os.path.join(script_dir, '.Saved')
+        files = os.listdir(load_dir)
+
+        print("\n__Loading File__:")
+
+        if len(files) == 0:
+            raise FileNotFoundError("No Saved Notes Found")
+        else:
+            for num,file_name in enumerate(files,start=1):
+                file = file_name.removesuffix(".json")
+                print(f"[{num}]. {file}")
+
+                selection = int(input(f"Pick Note [1-{len(files)}]: "))
+
+                if 1 > selection > len(files):
+                    raise FileNotFoundError("Selected Note Not Found")
+                else:
+                    return files[selection-1]
+
+    except FileNotFoundError as e:
+        print(f"Error 404 - {e}")
+        return None
 
 
 def download_notes():
