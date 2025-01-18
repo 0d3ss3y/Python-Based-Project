@@ -1,5 +1,9 @@
+import os
 from datetime import time
 from typing import Union
+
+def clear_terminal():
+    return os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def custom_timer() -> Union[None,time]:
@@ -25,7 +29,22 @@ def display_timer(current_time):
 
 
 def option():
-    pass
+    try:
+        options = ["Stop","Restart"]
+
+        for key,opt in enumerate(options,start=1):
+            print(f"{key}. {opt}")
+
+        selected = int(input(f"Select an option [1-{len(options)}]: "))
+
+        if selected not in range(1,len(options)):
+            raise ValueError(f"Illegal Selection")
+        else:
+            return options[selected-1]
+
+    except ValueError as error:
+        print(f"Error 404 - Not found. {error}")
+        return None
 
 
 def retrieve_start_time():
@@ -48,6 +67,7 @@ def retrieve_start_time():
 
 def main():
     try:
+        decrease_by = time(0,0,1)
         print("__Timer__\n")
         end_time = time(0,0,0)
         opt = retrieve_start_time()
@@ -64,6 +84,8 @@ def main():
             print(f"Starting Timer at {start_time}")
 
             while start_time < end_time:
+                current_time = start_time - decrease_by
+                opt = option()
 
 
 
