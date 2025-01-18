@@ -18,8 +18,17 @@ def delete_notes():
     pass
 
 
+def option():
+    options = ["Load Notes", "Download Notes", "Save Notes", "Create Notes", "Delete Notes"]
+
+    for key,opt in enumerate(options):
+        print(f"[{key}]. {opt}")
+
+
+
+
 def main():
-    pass
+    print("__Note Maker__\n")
 
 
 if __name__ == '__main__':
