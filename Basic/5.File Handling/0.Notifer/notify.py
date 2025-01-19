@@ -112,7 +112,22 @@ def create_notes(notes):
 
 
 def delete_notes():
-    pass
+    try:
+        scripts = os.path.join(script_dir, '.Saved')
+        files = os.listdir(scripts)
+
+        for key,file in enumerate(files):
+            print(f"[{key}]. {file}")
+
+        selection = int(input("Pick Note [1-{len(files)}]: "))
+
+        if 1 > selection > len(files):
+            raise FileNotFoundError("Selected Note Not Found")
+        else:
+            os.remove(os.path.join(scripts, files[selection-1]))
+
+    except FileNotFoundError as error:
+        print(f"Error 404 - {error}")
 
 
 def edit_notes():
