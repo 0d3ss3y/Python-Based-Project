@@ -13,14 +13,22 @@ def clear_terminal():
 
 def load_notes():
     load_dir = os.path.join(script_dir, '.Saved')
+    os.makedirs(load_dir, exist_ok=True)
     files = os.listdir(load_dir)
 
     def load_json(name):
         file_path = os.path.join(load_dir, name)
-        with open(file_path, "w") as file:
-            data = json.load(file)
-        print(f"Note Downloaded to {file_path}")
-        return data
+        try:
+            with open(file_path, "r") as file:
+                data = json.load(file)
+            print(f"JSON data loaded from {file_path}")
+            return data
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+            return None
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON from {file_path}: {e}")
+            return None
 
     try:
         print("\n__Loading File__:")
@@ -91,6 +99,7 @@ def save_notes(notes):
 def create_notes(notes):
 
     try:
+        print("\n__Creating Note__\n")
         category = input("Enter Category: ").strip()
         date = datetime.now().strftime("%m/%d/%Y")
         time = datetime.now().strftime("%H:%M:%S")
@@ -131,13 +140,18 @@ def delete_notes():
 
 
 def edit_notes():
-    pass
+    def editor(details):
+        for inx,(key, value) in enumerate(details.items(), start=1):
+            print(f"[{inx}]. {key}: {value}")
+
+    details = load_notes()
+    updated_notes = editor(details)
 
 
 def option() -> Union[str,None]:
     try:
         print("\n__Options__:")
-        options = ["Load Notes", "Download Notes", "Save Notes", "Create Notes", "Delete Notes"]
+        options = ["Load Notes", "Edit Notes", "Download Notes", "Create Notes", "Delete Notes","Exit"]
 
         for key, opt in enumerate(options,start=1):
             print(f"[{key}]. {opt}")
@@ -166,17 +180,15 @@ def main():
             elif opt == "Download Notes":
                 download_notes(notes)
                 print("Download Complete")
-            elif opt == "Save Notes":
-                save_notes(notes)
-                print("Notes successfully saved")
             elif opt == "Create Notes":
                 notes = create_notes(notes)
+                save_notes(notes)
                 print("Notes successfully created")
             elif opt == "Delete Notes":
-                notes = delete_notes(notes)
+                notes = delete_notes()
                 print("Notes successfully deleted")
             elif opt == "Edit Notes":
-                notes = edit_notes(notes)
+                notes = edit_notes()
             elif opt == "Exit":
                 raise SystemExit(0)
 
