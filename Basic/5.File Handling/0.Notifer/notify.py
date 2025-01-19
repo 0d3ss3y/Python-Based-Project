@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from datetime import datetime
 from time import sleep
 from typing import Union
 
@@ -87,8 +88,27 @@ def save_notes(notes):
         print(f"An unexpected error occurred: {e}")
 
 
-def create_notes():
-    pass
+def create_notes(notes):
+
+    try:
+        category = input("Enter Category: ").strip()
+        date = datetime.now().strftime("%m/%d/%Y")
+        time = datetime.now().strftime("%H:%M:%S")
+        title = input("Enter Note Title: ").strip()
+        note = input("Enter Note\n>").strip()
+
+        template ={
+            'category': category,
+            'date': date,
+            'time': time,
+            'note': note
+        }
+
+        notes[f"{title}"] = template
+        return notes
+
+    except ValueError as error:
+        print(f"Error 404 - {error}")
 
 
 def delete_notes():
