@@ -65,8 +65,26 @@ def download_notes(notes):
         print(f"An unexpected error occurred: {e}")
 
 
-def save_notes():
-    pass
+def save_notes(notes):
+    save_path = os.path.join(script_dir, '.Saved')
+    os.makedirs(save_path, exist_ok=True)
+
+    try:
+        name = input("Enter Note Name: ").strip()
+
+        if len(name) == 0:
+            raise ValueError("Name cannot be empty")
+
+        file_path = os.path.join(save_path, f"{name}.json")
+        with open(file_path, "w") as file:
+            json.dump(notes, file)
+        print(f"Note Downloaded to {file_path}")
+
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 def create_notes():
