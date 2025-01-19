@@ -10,11 +10,18 @@ def clear_terminal():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def load_notes() -> Union[str, None]:
-    try:
-        load_dir = os.path.join(script_dir, '.Saved')
-        files = os.listdir(load_dir)
+def load_notes():
+    load_dir = os.path.join(script_dir, '.Saved')
+    files = os.listdir(load_dir)
 
+    def load_json(name):
+        file_path = os.path.join(load_dir, name)
+        with open(file_path, "w") as file:
+            data = json.load(file)
+        print(f"Note Downloaded to {file_path}")
+        return data
+
+    try:
         print("\n__Loading File__:")
 
         if len(files) == 0:
@@ -29,7 +36,7 @@ def load_notes() -> Union[str, None]:
                 if 1 > selection > len(files):
                     raise FileNotFoundError("Selected Note Not Found")
                 else:
-                    return files[selection-1]
+                    return load_json(files[selection-1])
 
     except FileNotFoundError as e:
         print(f"Error 404 - {e}")
