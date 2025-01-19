@@ -1,15 +1,16 @@
+import json
 import os
 import sys
+from time import sleep
 from typing import Union
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 def clear_terminal():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def load_notes():
+def load_notes() -> Union[str, None]:
     try:
         load_dir = os.path.join(script_dir, '.Saved')
         files = os.listdir(load_dir)
@@ -35,8 +36,26 @@ def load_notes():
         return None
 
 
-def download_notes():
-    pass
+def download_notes(notes):
+    download_path = os.path.join(script_dir, 'Downloads')
+    os.makedirs(download_path, exist_ok=True)
+
+    try:
+        name = input("Enter Note Name: ").strip()
+
+        if len(name) == 0:
+            raise ValueError("Name cannot be empty")
+
+        file_path = os.path.join(download_path, f"{name}.json")
+        with open(file_path,"w") as file:
+            json.dump(notes,file)
+        print(f"Note Downloaded to {file_path}")
+
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 def save_notes():
@@ -100,6 +119,9 @@ def main():
                 notes = edit_notes(notes)
             elif opt == "Exit":
                 raise SystemExit(0)
+
+            sleep(2)
+            clear_terminal()
 
     except (KeyboardInterrupt, SystemExit):
         print("\nExiting...")
