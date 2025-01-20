@@ -74,12 +74,12 @@ def download_notes(notes):
         print(f"An unexpected error occurred: {e}")
 
 
-def save_notes(notes):
+def save_notes(notes,topic):
     save_path = os.path.join(script_dir, '.Saved')
     os.makedirs(save_path, exist_ok=True)
 
     try:
-        name = input("Enter Note Name: ").strip()
+        name = topic
 
         if len(name) == 0:
             raise ValueError("Name cannot be empty")
@@ -100,21 +100,21 @@ def create_notes(notes):
 
     try:
         print("\n__Creating Note__\n")
-        category = input("Enter Category: ").strip()
+        Topic = input("Enter Topic: ").strip()
         date = datetime.now().strftime("%m/%d/%Y")
         time = datetime.now().strftime("%H:%M:%S")
         title = input("Enter Note Title: ").strip()
         note = input("Enter Note\n>").strip()
 
         template ={
-            'category': category,
+            'Topic': Topic,
             'date': date,
             'time': time,
             'note': note
         }
 
         notes[f"{title}"] = template
-        return notes
+        return notes,Topic
 
     except ValueError as error:
         print(f"Error 404 - {error}")
@@ -140,12 +140,48 @@ def delete_notes():
 
 
 def edit_notes():
-    def editor(details):
+    def get_notes(details):
+        topics = {}
         for inx,(key, value) in enumerate(details.items(), start=1):
-            print(f"[{inx}]. {key}: {value}")
+            print(f"[{inx}]. {key}: {value["Topic"]}")
+            topic = value["Topic"]
+            topics[topic] = value["note"]
+
+        keys = list(topics.keys())
+        selection = int(input(f"Pick Note [1-{len(keys)}]: "))
+
+        if 1 > selection > len(keys):
+            raise FileNotFoundError("Selected Note Not Found")
+        else:
+            selected = keys[selection-1]
+            return topics[selected],selected
+
+
+    def editor(note):
+        print(f"\n__Editing Note__\n")
+        print(f"Original note:\n{note}")
+        new_note = input("\nEnter New Note\n>").strip()
+
+        if len(new_note) == 0:
+            return note
+        else:
+            return new_note
+
+
+    def update_note(details, note, topic):
+        for key, value in details.items():
+            if value["Topic"] == topic:
+                value["note"] = note
+
+        return details
+
 
     details = load_notes()
-    updated_notes = editor(details)
+
+    if details is not None:
+        note,topic = get_notes(details)
+        updated_notes = editor(note)
+        return update_note(details, updated_notes, topic)
 
 
 def option() -> Union[str,None]:
@@ -181,8 +217,8 @@ def main():
                 download_notes(notes)
                 print("Download Complete")
             elif opt == "Create Notes":
-                notes = create_notes(notes)
-                save_notes(notes)
+                notes,Topic = create_notes(notes)
+                save_notes(notes,Topic)
                 print("Notes successfully created")
             elif opt == "Delete Notes":
                 notes = delete_notes()
@@ -198,7 +234,6 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         print("\nExiting...")
         sys.exit()
-
 
 
 if __name__ == '__main__':
